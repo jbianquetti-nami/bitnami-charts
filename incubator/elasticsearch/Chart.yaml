@@ -1,0 +1,17 @@
+name: elasticsearch
+version: 0.0.1
+description: Elasticsearch is a highly scalable open-source full-text search and analytics engine. It allows you to store, search, and analyze big volumes of data quickly and in near real time.
+keywords:
+- database
+- nosql
+- elasticsearch
+- cluster 
+- bitnami
+home: https://www.elastic.co/products/elasticsearch
+sources:
+- https://github.com/bitnami/bitnami-docker-elasticsearch
+maintainers:
+- name: Bitnami 
+  email: containers@bitnami.com
+icon: https://static-www.elastic.co/assets/blt9a26f88bfbd20eb5/icon-elasticsearch-bb.svg
+engine: gotpl

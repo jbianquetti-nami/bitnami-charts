@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: {{ .Values.elasticsearchPort }}
+      targetPort: {{ .Values.elasticsearchPort }}
+    - name: node2node
+      port: {{ .Values.elasticsearchNodePort }}
+      targetPort: {{ .Values.elasticsearchNodePort }}
+  selector: 
+    app: {{ template "fullname" . }}
+  type: {{ .Values.serviceType }}
