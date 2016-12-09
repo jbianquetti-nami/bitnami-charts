@@ -22,7 +22,7 @@ spec:
       targetPort: 9300
   selector: 
     app: left-cricket-elasticsear
-  type: NodePort
+  type: LoadBalancer 
 
 ---
 # Source: elasticsearch/templates/petset.yaml
@@ -45,11 +45,11 @@ spec:
         pod.beta.kubernetes.io/init-containers: '[
             {
                 "name": "plugin-discovery-k8s",
-                "image": "bitnami/elasticsearch:2.4.0-r2", 
-                "command": [ "/bin/sh" , "-c" , "/opt/bitnami/elasticsearch/bin/plugin install io.fabric8/elasticsearch-cloud-kubernetes/2.4.1" ],
+                "image": "bitnami/elasticsearch:2.4.1-r2", 
+                "command": [ "/bin/sh" , "-c" , "yes | /opt/bitnami/elasticsearch/bin/plugin install io.fabric8/elasticsearch-cloud-kubernetes/2.4.1" ],
                 "volumeMounts": [
                     {
-                        "name": left-cricket-elasticsear ,
+                        "name": "left-cricket-elasticsear" ,
                         "mountPath": "/bitnami/elasticsearch"
                     }
                 ]
@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
       - name: left-cricket-elasticsear
-        image: "bitnami/elasticsearch:2.4.0-r2"
+        image: "bitnami/elasticsearch:2.4.1-r2"
         imagePullPolicy: ""
         env:
         - name: ELASTICSEARCH_PORT
@@ -70,7 +70,7 @@ spec:
         - name: ELASTICSEARCH_CLUSTER_NAME
           value: "elasticsearch-cluster"
         - name: ELASTICSEARCH_CLUSTER_HOSTS
-          value: left-cricket-elasticsear-0.left-cricket-elasticsear.default.svc.cluster.local, left-cricket-elasticsear-1.left-cricket-elasticsear.default.svc.cluster.local, left-cricket-elasticsear-2.left-cricket-elasticsear.default.svc.cluster.local
+          value: left-cricket-elasticsear-0.left-cricket-elasticsear.default.svc.cluster.local
         - name: ELASTICSEARCH_CLIENT_NODE
           value: "false"
         - name: ELASTICSEARCH_NODE_NAME
@@ -86,18 +86,18 @@ spec:
           httpGet:
             path: /
             port: http
-          initialDelaySeconds: 120
+          initialDelaySeconds: 300
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /
             port: http
-          initialDelaySeconds: 5
+          initialDelaySeconds: 250
           timeoutSeconds: 1
         resources:
           requests:
             cpu: 300m
-            memory: 512Mi
+            memory: 3000Mi
           
         volumeMounts:
         - name: left-cricket-elasticsear
