@@ -24,7 +24,7 @@ replicas: 3
 
 ##  docker image version. Fetch tag from https://hub.docker.com/r/bitnami/cassandra/tags/
 ##  Avoid to use 'latest' !
-image: "bitnami/elasticsearch:2.4.0-r2"
+image: "bitnami/elasticsearch:2.4.1-r3"
 
 ## Specify a imagePullPolicy
 ## 'Always' if imageTag is 'latest', else set to 'IfNotPresent'
@@ -51,6 +51,6 @@ persistence:
 ##
 resources:
   requests:
-    memory: 1000Mi
+    memory: 2000Mi
     cpu: 300m
 

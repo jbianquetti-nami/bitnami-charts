@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: left-cricket-elasticsear
+  name: es01
   labels:
-    app: left-cricket-elasticsear
+    app: es01
     chart: "elasticsearch-0.0.1"
     release: "left-cricket"
     heritage: "Tiller"
@@ -21,22 +21,22 @@ spec:
       port: 9300
       targetPort: 9300
   selector: 
-    app: left-cricket-elasticsear
-  type: LoadBalancer 
+    app: es01
+  type: NodePort
 
 ---
 # Source: elasticsearch/templates/petset.yaml
 apiVersion: "apps/v1alpha1"
 kind: PetSet
 metadata:
-  name: left-cricket-elasticsear
+  name: es01
   labels:
-    app: left-cricket-elasticsear
+    app: es01
     chart: elasticsearch-0.0.1
     release: left-cricket
     heritage: Tiller
 spec:
-  serviceName: left-cricket-elasticsear
+  serviceName: es01
   replicas: 3 
   template:
     metadata:
@@ -45,22 +45,22 @@ spec:
         pod.beta.kubernetes.io/init-containers: '[
             {
                 "name": "plugin-discovery-k8s",
-                "image": "bitnami/elasticsearch:2.4.1-r2", 
-                "command": [ "/bin/sh" , "-c" , "yes | /opt/bitnami/elasticsearch/bin/plugin install io.fabric8/elasticsearch-cloud-kubernetes/2.4.1" ],
+                "image": "bitnami/elasticsearch:2.4.1-r3", 
+                "command": [ "/opt/bitnami/elasticsearch/bin/plugin" , "install", "-b",   "io.fabric8/elasticsearch-cloud-kubernetes/2.4.1" ],
                 "volumeMounts": [
                     {
-                        "name": "left-cricket-elasticsear" ,
+                        "name": "es01" ,
                         "mountPath": "/bitnami/elasticsearch"
                     }
                 ]
             }
         ]'
       labels:
-        app: left-cricket-elasticsear
+        app: es01
     spec:
       containers:
-      - name: left-cricket-elasticsear
-        image: "bitnami/elasticsearch:2.4.1-r2"
+      - name: es01
+        image: "bitnami/elasticsearch:2.4.1-r3"
         imagePullPolicy: ""
         env:
         - name: ELASTICSEARCH_PORT
@@ -70,13 +70,13 @@ spec:
         - name: ELASTICSEARCH_CLUSTER_NAME
           value: "elasticsearch-cluster"
         - name: ELASTICSEARCH_CLUSTER_HOSTS
-          value: left-cricket-elasticsear-0.left-cricket-elasticsear.default.svc.cluster.local
+          value: es01-0.es01.default.svc.cluster.local
         - name: ELASTICSEARCH_CLIENT_NODE
           value: "false"
         - name: ELASTICSEARCH_NODE_NAME
           value: ""
         ports: 
-        - name: http
+        - name: rest
           containerPort: 9200
           protocol: "TCP"
         - name: node2node 
@@ -85,26 +85,25 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: http
+            port: rest
           initialDelaySeconds: 300
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /
-            port: http
+            port: rest
           initialDelaySeconds: 250
           timeoutSeconds: 1
         resources:
           requests:
             cpu: 300m
             memory: 3000Mi
-          
         volumeMounts:
-        - name: left-cricket-elasticsear
+        - name: es01
           mountPath: "/bitnami/elasticsearch"
   volumeClaimTemplates:
   - metadata:
-      name: left-cricket-elasticsear
+      name: es01
       annotations:
         volume.alpha.kubernetes.io/storage-class: generic
     spec:
